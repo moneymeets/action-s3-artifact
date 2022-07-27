@@ -1,0 +1,40 @@
+name: S3 artifact
+description: 'Upload artifact to artifacts S3 bucket or sync to target bucket'
+
+inputs:
+  cmd:
+    description: 'Choose `upload` to upload to artifacts bucket or `deploy` to sync from artifacts to target bucket'
+    required: true
+  config:
+    description: 'Path to s3-artifact-config.yml'
+    required: true
+    default: s3-artifact-config.yml
+  artifacts_s3_path:
+    description: 'S3 path to store the artifacts'
+    required: true
+  environment:
+    description: 'Required for deploy command to choose target bucket'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    # Build and install project from pyproject.toml in current directory
+    - run: pip install .
+      shell: bash
+      working-directory: ${{ github.action_path }}
+
+    - name: Run
+      run: s3-artifact
+      shell: bash
+      env:
+        CMD: ${{ inputs.cmd }}
+        CONFIG: ${{ github.workspace }}/${{ inputs.config }}
+        ARTIFACTS_S3_PATH: ${{ inputs.artifacts_s3_path }}
+        ENVIRONMENT: ${{ inputs.environment }}
+
+        PYTHONUNBUFFERED: '1'
