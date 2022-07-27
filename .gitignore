@@ -1,0 +1,4 @@
+/.idea/*
+!/.idea/watcherTasks.xml
+
+__pycache__
