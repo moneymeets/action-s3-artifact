@@ -1,7 +1,6 @@
 import os
 import subprocess
 from dataclasses import dataclass
-from distutils.util import strtobool
 from pathlib import Path
 from typing import Optional, Sequence
 
@@ -94,7 +93,7 @@ def main():
         case _:
             raise NotImplementedError(f"Unknown command - {cmd}")
 
-    _run_commands(commands, bool(strtobool(os.environ.get("DRY_RUN", "false"))))
+    _run_commands(commands, os.environ.get("DRY_RUN", "false").lower() in ('y', 'yes', 't', 'true', 'on', '1'))
 
 
 if __name__ == "__main__":
