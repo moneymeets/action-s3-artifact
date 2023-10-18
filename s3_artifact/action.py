@@ -93,7 +93,7 @@ def main():
         case _:
             raise NotImplementedError(f"Unknown command - {cmd}")
 
-    _run_commands(commands, os.environ.get("DRY_RUN", "false").lower() in ('y', 'yes', 't', 'true', 'on', '1'))
+    _run_commands(commands, os.environ.get("DRY_RUN", "false").lower() in ("y", "yes", "t", "true", "on", "1"))
 
 
 if __name__ == "__main__":
