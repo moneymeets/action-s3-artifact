@@ -5,31 +5,16 @@ description = ""
 authors = ["Marcel Arns <marcel.arns@moneymeets.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "~3.12"
 
 dataclasses-json = "*"
 pyyaml = "*"
 
 [tool.poetry.dev-dependencies]
-add-trailing-comma = "*"
-black = "*"
-flake8 = "*"
-flake8-black = "*"
-flake8-isort = "*"
-flake8-quotes = "*"
-flake8-coding = "*"
-isort = { extras = ["pyproject"], version = "*" }
+ruff = "*"
 
 pytest = "*"
 pytest-cov = "*"
-
-[tool.black]
-line-length = 120
-target-version = ["py311"]
-
-[tool.isort]
-profile = "black"
-line_length = 120
 
 [tool.coverage.run]
 branch = true
