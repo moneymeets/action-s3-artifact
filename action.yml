@@ -21,7 +21,7 @@ runs:
   steps:
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     # Build and install project from pyproject.toml in current directory
     - run: pip install .
