@@ -58,7 +58,7 @@ def deploy(config: S3ArtifactConfig, artifacts_s3_path: str, environment: str) -
 
 
 def upload(config: S3ArtifactConfig, target: str) -> Sequence[str]:
-    def _prepare_metadata_command(cache_config: S3ArtifactCustomMetadataConfig):
+    def _prepare_cache_control_and_content_type_command(cache_config: S3ArtifactCustomMetadataConfig):
         content_type = cache_config.mime_type or DEFAULT_MIME_TYPES[Path(cache_config.path).suffix]
         content_type_option = f"--content-type '{content_type}'"
 
@@ -72,7 +72,10 @@ def upload(config: S3ArtifactConfig, target: str) -> Sequence[str]:
 
     return (
         f"aws s3 sync {config.local_artifacts_path} {target} {_get_default_cache_control()} {S3_SYNC_OPTIONS}",
-        *(_prepare_metadata_command(custom_metadata) for custom_metadata in config.custom_metadata),
+        *(
+            _prepare_cache_control_and_content_type_command(custom_metadata)
+            for custom_metadata in config.custom_metadata
+        ),
     )
 
 
