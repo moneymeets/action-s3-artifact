@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import asdict
 from tempfile import NamedTemporaryFile
@@ -29,11 +30,24 @@ def _get_website_config(cache: Sequence[S3ArtifactCustomMetadataConfig] = ()) ->
     )
 
 
-def _get_upload_commands(pattern: str, mime_type: str, max_age: str) -> tuple[str, str]:
+def _get_metadata_command():
+    return (
+        f"aws s3 cp {ARTIFACTS_BUCKET} {ARTIFACTS_BUCKET} --recursive --no-progress --exclude '*' --include '*.html' "
+        f"--metadata '{json.dumps({
+            "X-Frame-Options": "SAMEORIGIN",
+            "Content-Security-Policy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "X-Content-Type-Options": "nosniff",
+        })}'"
+    )
+
+
+def _get_upload_commands(pattern: str, mime_type: str, max_age: str) -> tuple[str, str, str]:
     return (
         f"aws s3 sync dist/ {ARTIFACTS_BUCKET} --cache-control 'max-age=60' --delete --no-progress",
         f"aws s3 cp {ARTIFACTS_BUCKET} {ARTIFACTS_BUCKET} --recursive --no-progress --exclude '*' "
         f"--include {pattern} --metadata-directive REPLACE --content-type '{mime_type}' --cache-control '{max_age}'",
+        _get_metadata_command(),
     )
 
 
@@ -42,7 +56,10 @@ class ActionTest(TestCase):
         # Test success without special metadata
         self.assertEqual(
             first=upload(config=_get_website_config(), target=ARTIFACTS_BUCKET),
-            second=(f"aws s3 sync dist/ {ARTIFACTS_BUCKET} --cache-control 'max-age=60' --delete --no-progress",),
+            second=(
+                f"aws s3 sync dist/ {ARTIFACTS_BUCKET} --cache-control 'max-age=60' --delete --no-progress",
+                _get_metadata_command(),
+            ),
         )
 
         # Test success with special metadata

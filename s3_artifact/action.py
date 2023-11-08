@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from dataclasses import dataclass
@@ -70,12 +71,21 @@ def upload(config: S3ArtifactConfig, target: str) -> Sequence[str]:
     def _get_default_cache_control():
         return f"--cache-control '{config.default_cache_control}'" if config.default_cache_control else ""
 
+    metadata = json.dumps(
+        {
+            "X-Frame-Options": "SAMEORIGIN",
+            "Content-Security-Policy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
     return (
         f"aws s3 sync {config.local_artifacts_path} {target} {_get_default_cache_control()} {S3_SYNC_OPTIONS}",
         *(
             _prepare_cache_control_and_content_type_command(custom_metadata)
             for custom_metadata in config.custom_metadata
         ),
+        f"aws s3 cp {target} {target} {S3_CP_OPTIONS} --exclude '*' --include '*.html' --metadata '{metadata}'",
     )
 
 
