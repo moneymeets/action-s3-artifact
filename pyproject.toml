@@ -10,7 +10,7 @@ python = "~3.12"
 dataclasses-json = "*"
 pyyaml = "*"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 ruff = "*"
 
 pytest = "*"
