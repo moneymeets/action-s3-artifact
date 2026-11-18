@@ -5,7 +5,9 @@
     ":semanticCommitTypeAll(chore)"
   ],
   "configMigration": false,
-  "dependencyDashboard": true,
+  "dependencyDashboard": {
+    "enabled": true
+  },
   "separateMajorMinor": false,
   "ignoreDeps": [],
   "ignorePaths": [
